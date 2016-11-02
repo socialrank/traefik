@@ -210,9 +210,12 @@ func (provider *Kubernetes) loadIngresses(k8sClient k8s.Client) (*types.Configur
 					}
 				}
 				if len(r.Host) > 0 {
+					ruleType := i.Annotations["traefik.frontend.host.rule.type"]
+					ruleVal := i.Annotations["traefik.frontend.host.rule.value"]
+
 					if _, exists := templateObjects.Frontends[r.Host+pa.Path].Routes[r.Host]; !exists {
 						templateObjects.Frontends[r.Host+pa.Path].Routes[r.Host] = types.Route{
-							Rule: "HostRegexp:" + r.Host,
+							Rule: (ruleType || "Host") + ":" + (ruleVal || r.Host),
 						}
 					}
 				}
